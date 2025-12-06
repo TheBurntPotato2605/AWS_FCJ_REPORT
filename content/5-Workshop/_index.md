@@ -28,7 +28,7 @@ You will learn how to:
 
 #### Architecture
 
-![System Architecture](/images/5-Workshop/5.1-Workshop-overview/workshop-architecture.png)
+![System Architecture](/images/5-Workshop/workshop-architecture.png)
 
 The architecture is divided into three main domains:
 
