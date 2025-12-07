@@ -8,6 +8,12 @@ pre: " <b> 2. </b> "
 
 # Dự án Serverless Bảo Mật Cho Ứng Dụng Phục Vụ Toàn Cầu
 
+<div style="text-align: center; margin: 2rem 0;">
+  <a href="/Proposal.docx" download="Proposal.docx" style="display: inline-block; padding: 12px 24px; background-color: #FF9900; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px; transition: background-color 0.3s;">
+     Tải xuống Bản đề xuất (DOCX)
+  </a>
+</div>
+
 ## 1. Tóm tắt dự án
 Dự án vận hành một ứng dụng serverless trên AWS với quy trình CI/CD tự động hoàn toàn. Khi mã nguồn được đẩy lên GitLab, pipeline tự động quét bảo mật (Semgrep, Trivy), build container, triển khai hạ tầng bằng Terraform và đẩy image lên Amazon ECR. Người dùng truy cập qua Route 53 → CloudFront → WAF → API Gateway, được xác thực bởi Cognito và gọi Lambda để xử lý nghiệp vụ, lưu trữ dữ liệu trong DynamoDB. Hệ thống giám sát liên tục qua CloudWatch, CloudTrail, GuardDuty và gửi cảnh báo qua EventBridge → SNS khi phát hiện sự cố hoặc mối đe dọa. 
 
@@ -22,31 +28,31 @@ Nhiều tổ chức gặp khó khăn khi triển khai ứng dụng serverless do
 - Thiếu hệ thống giám sát, cảnh báo tập trung, dẫn đến phản ứng chậm với sự cố và mối đe dọa bảo mật
 
 ### Giải pháp
-Dự án cung cấp một kiến trúc serverless hoàn chỉnh với CI/CD tự động, bảo mật tích hợp và giám sát toàn diện. Quy trình triển khai tự động từ GitLab qua CodePipeline, CodeBuild, Semgrep (SAST), Trivy (container scan), Terraform (IaC) và CodeDeploy, đảm bảo mỗi thay đổi đều được kiểm tra và quét bảo mật. Lớp phân phối sử dụng Route 53, CloudFront và WAF để tăng tốc và bảo vệ ứng dụng. Backend serverless với Cognito (xác thực), API Gateway, Lambda, DynamoDB, Secrets Manager và KMS đảm bảo bảo mật dữ liệu. Hệ thống giám sát đa lớp (CloudWatch, CloudTrail, GuardDuty, EventBridge, SNS) phát hiện và cảnh báo sự cố tức thời.
+Dự án cung cấp một kiến trúc serverless hoàn chỉnh với CI/CD tự động, bảo mật tích hợp và giám sát toàn diện. Quy trình triển khai tự động từ GitLab CI/CD qua ba stages: lint (Semgrep SAST), build (Docker build + Trivy container scanning), và deploy (Terraform infrastructure provisioning), đảm bảo mỗi thay đổi đều được kiểm tra và quét bảo mật. Lớp phân phối sử dụng Route 53, CloudFront và WAF để tăng tốc và bảo vệ ứng dụng. Backend serverless với Cognito (xác thực), API Gateway, Lambda, DynamoDB, Secrets Manager và KMS đảm bảo bảo mật dữ liệu. Hệ thống giám sát đa lớp (CloudWatch, CloudTrail, GuardDuty, EventBridge, SNS) phát hiện và cảnh báo sự cố tức thời.
 
 ### Lợi ích và hoàn vốn đầu tư (ROI)
 Giải pháp mang lại lợi ích kỹ thuật và tài chính đáng kể: tự động hóa hoàn toàn giảm 80-90% thời gian triển khai và loại bỏ lỗi thủ công, bảo mật tích hợp giảm rủi ro lỗ hổng, CDN và serverless đảm bảo hiệu năng cao với khả năng mở rộng tự động, giám sát tập trung phát hiện sự cố nhanh hơn 70-80%. Về tài chính, chi phí vận hành ước tính ~$20-40/tháng cho quy mô nhỏ đến trung bình, thấp hơn đáng kể so với hạ tầng truyền thống, không cần đầu tư phần cứng ban đầu và giảm 60-70% chi phí nhân lực vận hành. Thời gian hoàn vốn dự kiến 1-2 tháng, đồng thời cung cấp nền tảng mở rộng cho các dự án tương lai.
 
 ## 3. Kiến trúc hệ thống
-![System Architecture](/images/2-Proposal/workshop-architecture.png)
+![System Architecture](/images/2-Proposal/platform_architecture.png)
 
 Kiến trúc gồm ba phần chính:
 
-1. **Pipeline CI/CD**: Chạy trên GitLab và AWS CodePipeline để build container, quét bảo mật (Semgrep, Trivy), triển khai hạ tầng bằng Terraform và đẩy image lên Amazon ECR
+1. **Domain CI/CD Pipeline**: GitLab CI/CD pipeline với ba stages: lint (Semgrep SAST), build (Docker build + Trivy container scanning), và deploy (Terraform infrastructure provisioning). Pipeline tự động build container images, quét lỗ hổng, và deploy images lên Amazon ECR.
 2. **Lớp phân phối nội dung**: Sử dụng Route 53, AWS WAF và CloudFront nhằm bảo vệ và tăng tốc truy cập người dùng
 3. **Lõi ứng dụng serverless**: Đặt tại khu vực ap-southeast-1 với Cognito (xác thực), API Gateway, Lambda (xử lý nghiệp vụ), DynamoDB (lưu trữ), KMS và Secrets Manager (bảo mật), cùng bộ công cụ giám sát (CloudWatch, CloudTrail, GuardDuty, EventBridge, SNS)
 
 **AWS Services sử dụng**
-- GitLab Actions, AWS CodePipeline, CodeBuild, CodeDeploy
-- Semgrep, Trivy
-- Terraform, Amazon ECR
-- Amazon Cognito, API Gateway, AWS Lambda, DynamoDB
-- AWS WAF, Amazon CloudFront, Amazon Route 53
-- AWS Secrets Manager, AWS Key Management Service (KMS)
-- Amazon CloudWatch, AWS CloudTrail, Amazon GuardDuty, Amazon EventBridge, Amazon SNS
+- **CI/CD:** GitLab CI/CD
+- **Security Scanning:** Semgrep, Trivy
+- **Infrastructure:** Terraform, Amazon ECR
+- **Compute & App Integration:** Amazon API Gateway, AWS Lambda, Amazon DynamoDB
+- **Networking & Content Delivery:** Amazon Route 53, Amazon CloudFront, AWS WAF
+- **Security & Compliance:** AWS Secrets Manager, AWS Key Management Service (KMS)
+- **Management & Governance:** Amazon CloudWatch, AWS CloudTrail, Amazon GuardDuty, Amazon EventBridge, Amazon SNS
 
 **Thiết kế thành phần**
-- *CI/CD*: Khi code đẩy lên GitLab, pipeline kích hoạt Semgrep (SAST), CodeBuild build container, Trivy quét, Terraform Plan/Apply, CodeDeploy cập nhật hạ tầng.
+- *CI/CD*: Khi code được push lên GitLab, GitLab CI/CD pipeline tự động chạy với ba stages: lint (Semgrep SAST để phân tích code tĩnh), build (Docker build container và Trivy scan lỗ hổng), và deploy (Terraform Plan/Apply để triển khai infrastructure và push images lên ECR).
 - *Phân phối & bảo vệ*: Route 53 quản lý DNS → CloudFront cache nội dung → WAF lọc lưu lượng độc hại trước khi tới API.
 - *Dịch vụ ứng dụng*: Cognito cấp token cho người dùng; API Gateway xác thực và chuyển request đến Lambda; Lambda xử lý nghiệp vụ, đọc/ghi DynamoDB.
 - *Bí mật & mã hóa*: Secrets Manager lưu thông tin nhạy cảm, KMS mã hóa khóa và dữ liệu.
@@ -54,17 +60,17 @@ Kiến trúc gồm ba phần chính:
 
 ## 4. Triển khai kỹ thuật
 1. Thiết kế IaC với Terraform cho VPC logic, IAM role ít quyền nhất, API Gateway, Lambda, DynamoDB, bảo mật cổng.
-2. Thiết lập GitLab CI/CD pipeline, tích hợp AWS CodePipeline/CodeBuild/CodeDeploy qua role liên tài khoản.
+2. Thiết lập GitLab CI/CD pipeline: Cấu hình GitLab CI/CD variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) và thiết lập IAM roles với least-privilege permissions cho ECR, Lambda, API Gateway, DynamoDB, Secrets Manager, và CloudWatch.
 3. Cấu hình Semgrep và Trivy chạy tự động; pipeline fail nếu phát hiện vấn đề nghiêm trọng.
 4. Định nghĩa Terraform module để quản lý Lambda (mã nguồn lưu trong ECR), API Gateway, CloudFront, WAF, Cognito.
 5. Bật CloudWatch log group, metric filter, GuardDuty, CloudTrail; cấu hình EventBridge rule gửi SNS khi có sự kiện bất thường.
-6. Thiết kế quy trình rollback tự động dựa trên CodeDeploy và versioning của Terraform state.
+6. Thiết kế cơ chế rollback: Sử dụng Terraform state versioning (remote backend) để rollback infrastructure, ECR image tagging để versioning container, và GitLab pipeline với tùy chọn rollback thủ công để revert về commit trước và redeploy.
 
 ## 5. Lộ trình & Mốc triển khai
 | Giai đoạn | Thời gian | Nội dung chính |
 | --- | --- | --- |
 | Khởi động | Tuần 1 | Thu thập yêu cầu, hoàn thiện thiết kế chi tiết, xác định role IAM |
-| Thiết lập IaC & CI/CD | Tuần 2 | Viết Terraform, tạo GitLab pipeline, kết nối CodePipeline |
+| Thiết lập IaC & CI/CD | Tuần 2 | Viết Terraform, thiết lập GitLab CI/CD pipeline, cấu hình AWS IAM roles và GitLab variables |
 | Tích hợp bảo mật | Tuần 3 | Cấu hình Semgrep, Trivy, WAF rule, Cognito, Secrets Manager |
 | Hoàn thiện backend | Tuần 4 | Viết Lambda, API Gateway, DynamoDB, test đơn vị |
 | Triển khai & kiểm thử | Tuần 5 | Chạy pipeline, kiểm thử tích hợp, hiệu năng CDN |
@@ -76,12 +82,12 @@ Kiến trúc gồm ba phần chính:
 | --- | --- | --- |
 | AWS Lambda & API Gateway | 250.000 yêu cầu/tháng | ~$1.00 - $3.00 |
 | Amazon DynamoDB | 5 GB lưu trữ, 5 RCU/5 WCU (Provisioned) | ~$5.00 - $10.00 |
-| CI/CD (CodePipeline/CodeBuild) | 5 lần triển khai (250 phút build) | ~$2.25 - $4.00 |
+| GitLab CI/CD | 5 lần triển khai (~30 phút tổng cộng) | ~$0.00 - $1.00 |
 | Amazon ECR | 5 GB lưu trữ Image (Giá: $0.10/GB) | ~$0.50 - $1.50 |
 | Route 53 | 1 Hosted Zone + truy vấn | ~$0.54 |
 | CloudFront / WAF | 15 GB Data Transfer Out, WAF cơ bản | ~$9.50 - $15.50 |
-| Security & Monitoring | GuardDuty, KMS, Secrets Manager, Logs tối thiểu | ~$2.00 - $5.00 |
-| **Tổng Chi Phí** | | **~$20.79 - $39.54 USD/tháng** |
+| Security & Monitoring | GuardDuty, KMS, Secrets Manager, logs tối thiểu | ~$2.00 - $5.00 |
+| **Tổng Chi Phí** | | **~$18.54 - $36.54 USD/tháng** |
 
 *Lưu ý: Chi phí thực tế phụ thuộc lưu lượng và cấu hình từng môi trường; có thể giảm thêm khi tắt môi trường dev/test. Không phát sinh chi phí phần cứng.*
 
@@ -100,7 +106,7 @@ Kiến trúc gồm ba phần chính:
 - **Xác thực và truy cập**: Triển khai automated testing cho API authentication, duy trì backup Cognito user pool ở region khác, thiết lập multi-factor authentication (MFA) cho tài khoản quản trị
 
 ### Kế hoạch dự phòng
-- **Sự cố bảo mật**: Nếu phát hiện lỗ hổng nghiêm trọng, ngay lập tức rollback về version trước đó qua CodeDeploy, cách ly tài nguyên bị ảnh hưởng, thông báo cho đội bảo mật và tiến hành patch
+- **Sự cố bảo mật**: Nếu phát hiện lỗ hổng nghiêm trọng, ngay lập tức rollback qua GitLab pipeline (revert commit và redeploy) hoặc Terraform state rollback, cách ly tài nguyên bị ảnh hưởng, thông báo cho đội bảo mật và tiến hành patch
 - **Downtime do cấu hình sai**: Sử dụng Terraform state backup để khôi phục cấu hình trước đó, chuyển traffic sang môi trường staging tạm thời nếu cần, có sẵn runbook để rollback nhanh
 - **Vượt quá ngân sách**: Tự động tắt các dịch vụ không cần thiết khi đạt ngưỡng cảnh báo, tối ưu CloudFront cache hit ratio, xem xét chuyển sang Reserved Capacity cho DynamoDB nếu sử dụng lâu dài
 - **Lỗi xác thực**: Chuyển sang backup Cognito user pool ở region khác, sử dụng API Gateway caching để giảm tải, có sẵn fallback authentication mechanism

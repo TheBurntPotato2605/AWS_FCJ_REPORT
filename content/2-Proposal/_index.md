@@ -8,6 +8,12 @@ pre: " <b> 2. </b> "
 
 # Secure Serverless Application Proposal
 
+<div style="text-align: center; margin: 2rem 0;">
+  <a href="/Proposal.docx" download="Proposal.docx" style="display: inline-block; padding: 12px 24px; background-color: #FF9900; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px; transition: background-color 0.3s;">
+     Download Proposal (DOCX)
+  </a>
+</div>
+
 ## 1. Project Summary
 The project operates a serverless application on AWS with a fully automated CI/CD pipeline. When code is pushed to GitLab, the pipeline automatically scans for security vulnerabilities (Semgrep, Trivy), builds containers, provisions infrastructure via Terraform, and deploys images to Amazon ECR. Users access the application through Route 53 → CloudFront → WAF → API Gateway, authenticated by Cognito, invoking Lambda functions for business logic and storing data in DynamoDB. The system continuously monitors through CloudWatch, CloudTrail, and GuardDuty, sending alerts via EventBridge → SNS upon incidents or threats.
 
@@ -22,31 +28,31 @@ Many organizations struggle with deploying serverless applications due to error-
 - Limited observability causes slow incident response and delayed threat detection
 
 ### Solution
-The project delivers a complete serverless architecture with automated CI/CD, integrated security, and comprehensive monitoring. The deployment pipeline automates from GitLab through CodePipeline, CodeBuild, Semgrep (SAST), Trivy (container scanning), Terraform (IaC), and CodeDeploy, ensuring every change is tested and security-scanned. The delivery layer uses Route 53, CloudFront, and WAF to accelerate and protect the application. The serverless backend with Cognito (authentication), API Gateway, Lambda, DynamoDB, Secrets Manager, and KMS ensures data security. A multi-layer monitoring system (CloudWatch, CloudTrail, GuardDuty, EventBridge, SNS) detects and alerts on incidents instantly.
+The project delivers a complete serverless architecture with automated CI/CD, integrated security, and comprehensive monitoring. The deployment pipeline automates from GitLab CI/CD through three stages: lint (Semgrep SAST), build (Docker build + Trivy container scanning), and deploy (Terraform infrastructure provisioning), ensuring every change is tested and security-scanned. The delivery layer uses Route 53, CloudFront, and WAF to accelerate and protect the application. The serverless backend with Cognito (authentication), API Gateway, Lambda, DynamoDB, Secrets Manager, and KMS ensures data security. A multi-layer monitoring system (CloudWatch, CloudTrail, GuardDuty, EventBridge, SNS) detects and alerts on incidents instantly.
 
 ### Benefits and Return on Investment (ROI)
 The solution delivers significant technical and financial benefits: full automation reduces deployment time by 80-90% and eliminates manual errors, integrated security reduces vulnerability risks, CDN and serverless architecture ensure high performance with automatic scaling, and centralized monitoring enables 70-80% faster incident detection. Financially, operational costs are estimated at ~$20-40/month for small to medium scale, significantly lower than traditional infrastructure, with no upfront hardware investment and 60-70% reduction in operational labor costs. Expected payback period is 1-2 months, while providing an extensible foundation for future projects.
 
 ## 3. System Architecture
-![System Architecture](/images/2-Proposal/workshop-architecture.png)
+![System Architecture](/images/2-Proposal/platform_architecture.png)
 
 The architecture is divided into three domains:
 
-1. **CI/CD Pipeline**: Running on GitLab and AWS CodePipeline to build containers, scan security (Semgrep, Trivy), provision infrastructure via Terraform, and deploy images to Amazon ECR
+1. **CI/CD Pipeline Domain**: GitLab CI/CD pipeline with three stages: lint (Semgrep SAST), build (Docker build + Trivy container scanning), and deploy (Terraform infrastructure provisioning). The pipeline automatically builds container images, scans for vulnerabilities, and deploys images to Amazon ECR.
 2. **Content Delivery & Protection Layer**: Using Route 53, AWS WAF, and CloudFront to accelerate and secure user access
 3. **Serverless Application Core**: Located in ap-southeast-1 region with Cognito (authentication), API Gateway, Lambda (business logic), DynamoDB (storage), KMS and Secrets Manager (security), and the observability suite (CloudWatch, CloudTrail, GuardDuty, EventBridge, SNS)
 
 **AWS Services Used**
-- GitLab Actions, AWS CodePipeline, CodeBuild, CodeDeploy
-- Semgrep, Trivy
-- Terraform, Amazon ECR
-- Amazon Cognito, Amazon API Gateway, AWS Lambda, Amazon DynamoDB
-- AWS WAF, Amazon CloudFront, Amazon Route 53
-- AWS Secrets Manager, AWS Key Management Service (KMS)
-- Amazon CloudWatch, AWS CloudTrail, Amazon GuardDuty, Amazon EventBridge, Amazon SNS
+- **CI/CD:** GitLab CI/CD
+- **Security Scanning:** Semgrep, Trivy
+- **Infrastructure:** Terraform, Amazon ECR
+- **Compute & App Integration:** Amazon API Gateway, AWS Lambda, Amazon DynamoDB
+- **Networking & Content Delivery:** Amazon Route 53, Amazon CloudFront, AWS WAF
+- **Security & Compliance:** AWS Secrets Manager, AWS Key Management Service (KMS)
+- **Management & Governance:** Amazon CloudWatch, AWS CloudTrail, Amazon GuardDuty, Amazon EventBridge, Amazon SNS
 
 **Component Design**
-- *CI/CD*: A Git push triggers the pipeline to run Semgrep (SAST), build containers in CodeBuild, scan with Trivy, execute Terraform Plan/Apply, and deliver via CodeDeploy.
+- *CI/CD*: A Git push to GitLab triggers the CI/CD pipeline with three stages: lint (Semgrep SAST for static code analysis), build (Docker container build and Trivy vulnerability scanning), and deploy (Terraform Plan/Apply to provision infrastructure and push images to ECR).
 - *Delivery & Protection*: Route 53 handles DNS → CloudFront caches content → WAF filters malicious traffic before reaching the APIs.
 - *Application Services*: Cognito issues tokens, API Gateway validates requests and forwards them to Lambda, which processes business logic and reads/writes DynamoDB.
 - *Secrets & Encryption*: Secrets Manager stores sensitive information, KMS encrypts data and keys.
@@ -54,17 +60,17 @@ The architecture is divided into three domains:
 
 ## 4. Technical Implementation
 1. Model the infrastructure with Terraform: logical VPC boundaries, least-privilege IAM roles, API Gateway, Lambda, DynamoDB, and security controls.
-2. Configure GitLab CI/CD with AWS CodePipeline/CodeBuild/CodeDeploy using cross-account IAM roles.
+2. Configure GitLab CI/CD pipeline: Set up GitLab CI/CD variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) and configure IAM roles with least-privilege permissions for ECR, Lambda, API Gateway, DynamoDB, Secrets Manager, and CloudWatch access.
 3. Enforce Semgrep and Trivy scans in every pipeline run, failing builds on high-severity findings.
 4. Define Terraform modules for Lambda (container images in ECR), API Gateway, CloudFront, WAF, and Cognito resources.
 5. Enable CloudWatch log groups, metric filters, GuardDuty, CloudTrail; create EventBridge rules that fan out to SNS alerts.
-6. Implement automated rollback via CodeDeploy deployment groups and versioned Terraform state.
+6. Implement rollback mechanisms: Use versioned Terraform state (remote backend) for infrastructure rollback, ECR image tagging for container versioning, and GitLab pipeline with manual rollback option to revert to previous commits and redeploy.
 
 ## 5. Timeline & Milestones
 | Phase | Schedule | Key Deliverables |
 | --- | --- | --- |
 | Kick-off | Week 1 | Requirements intake, detailed design, IAM role matrix |
-| IaC & CI/CD Setup | Week 2 | Terraform baseline, GitLab pipeline, CodePipeline integration |
+| IaC & CI/CD Setup | Week 2 | Terraform baseline, GitLab CI/CD pipeline setup, AWS IAM roles and GitLab variables configuration |
 | Security Integration | Week 3 | Semgrep, Trivy, WAF rules, Cognito, Secrets Manager |
 | Backend Completion | Week 4 | Lambda handlers, API Gateway routes, DynamoDB schema, unit tests |
 | Deployment & Testing | Week 5 | End-to-end pipeline run, integration and CDN performance testing |
@@ -76,12 +82,12 @@ The architecture is divided into three domains:
 | --- | --- | --- |
 | AWS Lambda & API Gateway | 250,000 requests/month | ~$1.00 - $3.00 |
 | Amazon DynamoDB | 5 GB storage, 5 RCU/5 WCU (Provisioned) | ~$5.00 - $10.00 |
-| CI/CD (CodePipeline/CodeBuild) | 5 deployments (250 build minutes) | ~$2.25 - $4.00 |
+| GitLab CI/CD | 5 deployments (~30 minutes total) | ~$0.00 - $1.00 |
 | Amazon ECR | 5 GB image storage ($0.10/GB) | ~$0.50 - $1.50 |
 | Route 53 | 1 Hosted Zone + queries | ~$0.54 |
 | CloudFront / WAF | 15 GB Data Transfer Out, basic WAF usage | ~$9.50 - $15.50 |
 | Security & Monitoring | GuardDuty, KMS, Secrets Manager, minimal logs | ~$2.00 - $5.00 |
-| **Total Cost** | | **~$20.79 - $39.54 USD/month** |
+| **Total Cost** | | **~$18.54 - $36.54 USD/month** |
 
 *Note: Actual spend varies with traffic and configuration; costs can drop further by shutting down dev/test environments. No hardware expenditure required.*
 
@@ -100,7 +106,7 @@ The architecture is divided into three domains:
 - **Authentication & Access**: Deploy automated testing for API authentication, maintain backup Cognito user pool in another region, enable multi-factor authentication (MFA) for administrative accounts
 
 ### Contingency Plan
-- **Security Incidents**: Upon detection of critical vulnerabilities, immediately rollback to previous version via CodeDeploy, isolate affected resources, notify security team and proceed with patching
+- **Security Incidents**: Upon detection of critical vulnerabilities, immediately rollback via GitLab pipeline (revert commit and redeploy) or Terraform state rollback, isolate affected resources, notify security team and proceed with patching
 - **Downtime from Misconfiguration**: Use Terraform state backup to restore previous configuration, temporarily route traffic to staging environment if needed, maintain runbook for quick rollback
 - **Budget Overrun**: Automatically shut down non-essential services when alert threshold is reached, optimize CloudFront cache hit ratio, consider switching to Reserved Capacity for DynamoDB if long-term usage
 - **Authentication Failures**: Switch to backup Cognito user pool in another region, utilize API Gateway caching to reduce load, maintain fallback authentication mechanism
