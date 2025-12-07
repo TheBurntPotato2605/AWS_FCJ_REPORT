@@ -34,7 +34,7 @@ The project delivers a complete serverless architecture with automated CI/CD, in
 The solution delivers significant technical and financial benefits: full automation reduces deployment time by 80-90% and eliminates manual errors, integrated security reduces vulnerability risks, CDN and serverless architecture ensure high performance with automatic scaling, and centralized monitoring enables 70-80% faster incident detection. Financially, operational costs are estimated at ~$20-40/month for small to medium scale, significantly lower than traditional infrastructure, with no upfront hardware investment and 60-70% reduction in operational labor costs. Expected payback period is 1-2 months, while providing an extensible foundation for future projects.
 
 ## 3. System Architecture
-![System Architecture](/images/2-Proposal/platform_architecture.png)
+![System Architecture](/images/2-Proposal/workshop-architecture.png)
 
 The architecture is divided into three domains:
 

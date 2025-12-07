@@ -34,7 +34,7 @@ Dự án cung cấp một kiến trúc serverless hoàn chỉnh với CI/CD tự
 Giải pháp mang lại lợi ích kỹ thuật và tài chính đáng kể: tự động hóa hoàn toàn giảm 80-90% thời gian triển khai và loại bỏ lỗi thủ công, bảo mật tích hợp giảm rủi ro lỗ hổng, CDN và serverless đảm bảo hiệu năng cao với khả năng mở rộng tự động, giám sát tập trung phát hiện sự cố nhanh hơn 70-80%. Về tài chính, chi phí vận hành ước tính ~$20-40/tháng cho quy mô nhỏ đến trung bình, thấp hơn đáng kể so với hạ tầng truyền thống, không cần đầu tư phần cứng ban đầu và giảm 60-70% chi phí nhân lực vận hành. Thời gian hoàn vốn dự kiến 1-2 tháng, đồng thời cung cấp nền tảng mở rộng cho các dự án tương lai.
 
 ## 3. Kiến trúc hệ thống
-![System Architecture](/images/2-Proposal/platform_architecture.png)
+![System Architecture](/images/2-Proposal/workshop-architecture.png)
 
 Kiến trúc gồm ba phần chính:
 
